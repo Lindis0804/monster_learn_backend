@@ -1,8 +1,63 @@
-const router = require("express").Router()
-const courseController = require("../controllers/courseController")
+const courseRouter = require("express").Router();
+const checkController = require("../controllers/checkController");
+const courseController = require("../controllers/courseController");
 
-router.get("/",courseController.getCourse)
-router.post("/",courseController.addCourse)
-router.get("/:name",courseController.getCourseByName)
-router.put("/:name",courseController.updateCourse)
-module.exports = router
+courseRouter.get(
+  "/getAll",
+  checkController.checkToken,
+  courseController.getAllCourse
+);
+courseRouter.get(
+  "/get/:courseId",
+  checkController.checkToken,
+  courseController.getCourseById
+);
+courseRouter.get(
+  "/getCoursesOfUser",
+  checkController.checkToken,
+  courseController.getCoursesOfUser
+);
+courseRouter.put(
+  "/update",
+  checkController.checkToken,
+  courseController.updateCourse
+);
+courseRouter.post(
+  "/rate",
+  checkController.checkToken,
+  courseController.rateCourse
+);
+courseRouter.post(
+  "/like",
+  checkController.checkToken,
+  courseController.likeCourse
+);
+courseRouter.post(
+  "/add/questions",
+  checkController.checkToken,
+  checkController.checkAdmin,
+  courseController.addQuestions
+);
+courseRouter.post(
+  "/add/questionByCourse",
+  checkController.checkToken,
+  checkController.checkAdmin,
+  courseController.addQuestion
+);
+courseRouter.get(
+  "/get/question/:courseId/:quesIndex",
+  checkController.checkToken,
+  courseController.getQuestionByIndex
+);
+courseRouter.post(
+  "/addTest",
+  checkController.checkToken,
+  checkController.checkAdmin,
+  courseController.addTest
+);
+courseRouter.get(
+  "/get/tests/:courseId",
+  checkController.checkToken,
+  courseController.getTestsOfCourse
+);
+module.exports = courseRouter;

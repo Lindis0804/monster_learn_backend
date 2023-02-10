@@ -1,35 +1,43 @@
-const mongoose = require("mongoose")
-const Course = require("./courseModel")
-const questionSchema = new mongoose.Schema({
-    Course:{
+const { SchemaTypes, Schema, model } = require("mongoose");
+const questionSchema = new Schema(
+  {
+    course: {
+      type: String,
+    },
+    chapter: {
+      type: String,
+    },
+    quest: {
+      type: String,
+      required: true,
+    },
+    choices: [
+      {
         type: String,
-        required: true,
+      },
+    ],
+    answer: {
+      type: String,
+      required: true,
     },
-    Chapter:{
-        type:String,
+    type: {
+      type: Number,
     },
-    Question:{
-        type:String,
-        required:true
+    level: {
+      type: Number,
+      required: true,
+      default: 0,
     },
-    A:{
-        type:String,
-    },
-    B:{
-        type:String,
-    },
-    C:{
-        type:String,
-    },
-    D:{
-        type:String,
-    },
-    Answer:{
-        type:String,
-    },
-    Type:{
-        type:String,
-    }
-})
-let Question = mongoose.model("Question",questionSchema)
-module.exports = {Question};
+    comments: [
+      {
+        type: SchemaTypes.ObjectId,
+        ref: "Comment",
+      },
+    ],
+  },
+  {
+    collection: "monsterQuestions",
+  }
+);
+let Question = model("Question", questionSchema);
+module.exports = Question;
