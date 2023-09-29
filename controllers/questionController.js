@@ -115,7 +115,7 @@ const questionController = {
       }
       const user = req.data;
       var result = {};
-      const userInfo = await User.findById(user._id, "courses");
+      const userInfo = await User.findById(user._id, "courses coins");
       const userCourses = userInfo.courses;
       const userCourseIndex = userCourses
         .map((item) => item.course.toString())
@@ -200,21 +200,19 @@ const questionController = {
                 $slice: [index, 1],
               },
             });
-          // console.log("Course", course);
           var question = course.chapters[chapter].questions[0];
-          // console.log("question", question);
           if (answer === question.answer) {
+            userInfo.coins += 10;
             if (index === course.chapters[chapter].numOfQuestion - 1) {
-              if (chapter < course.numOfChapter) {
+              if (chapter < course.numOfChapter - 1) {
                 result = {
                   chapter: chapter + 1,
                   index: 0,
                 };
-                // console.log("result", result);
               } else {
                 result = {
                   chapter: chapter,
-                  index: index + 1,
+                  index: index,
                   done: true,
                 };
                 // console.log("result", result);
@@ -323,6 +321,45 @@ const questionController = {
     try {
       var course = await Course.findById(courseId).populate({
         path: "chapters.questions",
+        populate: {
+          path: "comments",
+          populate: [
+            {
+              path: "author",
+              select: "_id name avatar coins",
+            },
+            {
+              path: "likers",
+              select: "_id name avatar coins",
+            },
+            {
+              path: "replies",
+              populate: [
+                {
+                  path: "author",
+                  select: "_id name avatar coins",
+                },
+                {
+                  path: "likers",
+                  select: "_id name avatar coins",
+                },
+              ],
+            },
+            {
+              path: "replied",
+              populate: [
+                {
+                  path: "author",
+                  select: "_id name avatar coins",
+                },
+                {
+                  path: "likers",
+                  select: "_id name avatar coins",
+                },
+              ],
+            },
+          ],
+        },
       });
       if (course) {
         const question = course.chapters[chapter].questions[index];
@@ -369,7 +406,45 @@ const questionController = {
         }
       }
       const questionId = course.chapters[chapter].questions[index];
-      const question = await Question.findById(questionId);
+      const question = await Question.findById(questionId).populate({
+        path: "comments",
+        populate: [
+          {
+            path: "author",
+            select: "_id name avatar coins",
+          },
+          {
+            path: "likers",
+            select: "_id name avatar coins",
+          },
+          {
+            path: "replies",
+            populate: [
+              {
+                path: "author",
+                select: "_id name avatar coins",
+              },
+              {
+                path: "likers",
+                select: "_id name avatar coins",
+              },
+            ],
+          },
+          {
+            path: "replied",
+            populate: [
+              {
+                path: "author",
+                select: "_id name avatar coins",
+              },
+              {
+                path: "likers",
+                select: "_id name avatar coins",
+              },
+            ],
+          },
+        ],
+      });
       return res.status(200).json({
         success: true,
         message: "Get previous question successfully.",
@@ -386,6 +461,36 @@ const questionController = {
         success: false,
         message: "Get previous question by index fail.",
         err: err,
+      });
+    }
+  },
+  getQuestionAnswerByIndex: async (req, res, next) => {},
+  getCommentsOfQuestion: async (req, res, next) => {
+    const { pageSize, page, questionId } = req.query;
+    const userId = req.data._id;
+    console.log("Get comments of question.");
+    try {
+      const comments = (
+        await Question.findById(questionId).populate({
+          path: "comments",
+          select: {
+            replies: 0,
+            replied: 0,
+          },
+          populate: {
+            path: "author",
+            select: ["_id", "name", "avatar"],
+          },
+        })
+      ).comments;
+      return res.status(200).json({
+        success: true,
+        comments,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Get comments of question fail.",
       });
     }
   },

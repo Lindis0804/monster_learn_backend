@@ -20,4 +20,9 @@ router.get(
   checkController.checkToken,
   questionController.getPreviousQuestionByIndex
 );
+router.get(
+  "/comments",
+  checkController.checkToken,
+  questionController.getCommentsOfQuestion
+);
 module.exports = router;

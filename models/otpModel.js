@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const {SchemaTypes,Schema,model} = mongoose
+const { SchemaTypes, Schema, model } = mongoose;
 const otpSchema = new Schema(
   {
     gmail: {

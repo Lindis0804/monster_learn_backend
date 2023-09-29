@@ -61,6 +61,7 @@ const courseController = {
       }, 0);
       var numOfPassChapterQuestion = 0;
       var numOfPassQuestion = 0;
+      var done = false;
       var courseIndex = courses
         .map((item) => item.course.toString())
         .indexOf(courseId);
@@ -98,6 +99,7 @@ const courseController = {
         numOfPassChapterQuestion =
           courses[courseIndex].numOfPassChapterQuestion;
         numOfPassQuestion = courses[courseIndex].numOfPassQuestion;
+        done = courses[courseIndex].done;
       }
       return res.status(200).json({
         success: true,
@@ -108,6 +110,7 @@ const courseController = {
           numOfPassQuestion,
           totalNumOfCourse: await Course.count(),
           numOfDoneCourse,
+          done,
         },
       });
     } catch (err) {
@@ -166,7 +169,7 @@ const courseController = {
       return res.status(200).json({
         success: true,
         message: "Rate course successfully.",
-        // data: course,
+        data: { rate: course["rate"] },
       });
     } catch (err) {
       return res.status(500).json({

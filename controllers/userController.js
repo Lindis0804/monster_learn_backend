@@ -34,7 +34,7 @@ const userController = {
       res.status(500).json({
         success: false,
         message: "Sign in fail.",
-        message: JSON.stringify(err),
+        err: JSON.stringify(err),
       });
     }
   },
